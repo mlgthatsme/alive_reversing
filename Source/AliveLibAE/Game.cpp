@@ -40,6 +40,12 @@
 #include "Movie.hpp"
 #include "Masher.hpp"
 
+#if USE_SDL2
+#include <imgui.h>
+#include <imgui_impl_sdl.h>
+#include <imgui_sdl.h>
+#endif
+
 void Game_ForceLink() { }
 
 using TExitGameCallBack = std::add_pointer<void CC()>::type;
@@ -490,6 +496,8 @@ EXPORT void CC Game_Run_466D40()
     gAttract_5C1BA0 = 0;
     dword_5C2F70 = 34;
     SYS_EventsPump_494580();
+
+    ImGui::NewFrame();
 
     PSX_ResetCallBack_4FAA20();
     gPsxDisplay_5C1130.ctor_41DC30();

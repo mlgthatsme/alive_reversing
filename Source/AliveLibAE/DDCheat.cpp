@@ -10,6 +10,12 @@
 #include "ResourceManager.hpp"
 #include "Abe.hpp"
 
+#if USE_SDL2
+#include <imgui.h>
+#include <imgui_impl_sdl.h>
+#include <imgui_sdl.h>
+#endif
+
 void DDCheat_ForceLink() { }
 
 ALIVE_VAR(1, 0x5c1be6, __int16, sDoorsOpen_5C1BE6, 0);

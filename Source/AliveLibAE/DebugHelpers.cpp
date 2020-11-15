@@ -28,6 +28,17 @@
 #include "QuikSave.hpp"
 #include "PauseMenu.hpp"
 #include "BaseBomb.hpp"
+#include "VGA.hpp"
+#include "CheatController.hpp"
+#include "StatsSign.hpp"
+#include "GasCountDown.hpp"
+#include "ColourfulMeter.hpp"
+
+#if USE_SDL2
+#include <imgui.h>
+#include <imgui_impl_sdl.h>
+#include <imgui_sdl.h>
+#endif
 
 #include "Factory.hpp"
 
@@ -2221,6 +2232,242 @@ BaseGameObject* FindObjectOfType(Types id)
             return pBaseGameObject;
     }
     return nullptr;
+}
+
+void TeleportViaLvlIndex(int index)
+{
+    const auto levelSelectEntry = gPerLvlData_561700[index];
+    sActiveHero_5C1B68->field_106_current_motion = eAbeStates::State_3_Fall_459B60;
+    sActiveHero_5C1B68->field_1AC_flags.Set(Abe::e1AC_Bit7_land_softly);
+    sActiveHero_5C1B68->field_C2_lvl_number = levelSelectEntry.field_4_level;
+    sActiveHero_5C1B68->field_C0_path_number = levelSelectEntry.field_6_path;
+    sActiveHero_5C1B68->field_100_pCollisionLine = nullptr;
+
+    if (levelSelectEntry.field_A_id & 1)
+    {
+        sActiveHero_5C1B68->field_D6_scale = 1;
+        sActiveHero_5C1B68->field_CC_sprite_scale = FP_FromDouble(1.0);
+    }
+    else
+    {
+        sActiveHero_5C1B68->field_D6_scale = 0;
+        sActiveHero_5C1B68->field_CC_sprite_scale = FP_FromDouble(0.5);
+    }
+
+    sActiveHero_5C1B68->field_F8_LastLineYPos = sActiveHero_5C1B68->field_BC_ypos;
+    gMap_5C3030.SetActiveCam_480D30(levelSelectEntry.field_4_level, levelSelectEntry.field_6_path, levelSelectEntry.field_8_camera, CameraSwapEffects::eEffect0_InstantChange, 0, 0);
+    sActiveHero_5C1B68->field_B8_xpos = FP_FromInteger(levelSelectEntry.field_C_abe_x_off - Path_Get_Bly_Record_460F30(levelSelectEntry.field_4_level, levelSelectEntry.field_6_path)->field_4_pPathData->field_1A_abe_start_xpos);
+    sActiveHero_5C1B68->field_BC_ypos = FP_FromInteger(levelSelectEntry.field_E_abe_y_off - Path_Get_Bly_Record_460F30(levelSelectEntry.field_4_level, levelSelectEntry.field_6_path)->field_4_pPathData->field_1C_abe_start_ypos);
+    DEV_CONSOLE_MESSAGE("Teleported to " + std::string(levelSelectEntry.field_0_display_name), 6);
+}
+
+void Debug_UI_Object(BaseAliveGameObject * pObj)
+{
+    double min0 = 0;
+    double max1 = 1;
+
+    double x = FP_GetDouble(pObj->field_B8_xpos);
+    ImGui::DragScalar("X", ImGuiDataType_Double, &x, 1.0f, false, false, "%f");
+    pObj->field_B8_xpos = FP_FromDouble(x);
+    double y = FP_GetDouble(pObj->field_BC_ypos);
+    ImGui::DragScalar("Y", ImGuiDataType_Double, &y, 1.0f, false, false, "%f");
+    pObj->field_BC_ypos = FP_FromDouble(y);
+
+    double health = FP_GetDouble(pObj->field_10C_health);
+    ImGui::SliderScalar("Health", ImGuiDataType_Double, &health, &min0, &max1, "%f");
+    pObj->field_10C_health = FP_FromDouble(health);
+
+    float color[3] = { (float)(pObj->field_D0_r >> 8) ,(float)(pObj->field_D2_g >> 8) ,(float)(pObj->field_D4_b >> 8) };
+    ImGui::ColorEdit3("ObjColor##1", (float*)&color, 0);
+
+    //ImGui::LabelText("Pos", "%f %f", , FP_GetDouble(pObj->field_BC_ypos));
+}
+
+bool gDebugUIEnabled_SwitchStates = false;
+void Debug_UI_SwitchStates()
+{
+    if (gDebugUIEnabled_SwitchStates)
+    {
+        if (!ImGui::Begin("Switch States", &gDebugUIEnabled_SwitchStates))
+        {
+            ImGui::End();
+        }
+        else
+        {
+            if (ImGui::Button("All On"))
+            {
+                for (int i = 0; i < 256; i++)
+                {
+                    sSwitchStates_5C1A28.mData[i] = 1;
+                }
+            }
+
+            ImGui::SameLine();
+
+            if (ImGui::Button("All Off"))
+            {
+                for (int i = 0; i < 256; i++)
+                {
+                    sSwitchStates_5C1A28.mData[i] = 0;
+                }
+            }
+
+            ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0.0f, 0.0f));
+            for (int i = 0; i < 256; i++)
+            {
+                ImVec2 button_sz(30, 20);
+                bool active = sSwitchStates_5C1A28.mData[i] > 0;
+
+                if (active)
+                {
+                    ImGui::PushStyleColor(ImGuiCol_Button, (ImVec4)ImColor(1.0f, 1.0f, 0.0f));
+                    ImGui::PushStyleColor(ImGuiCol_Text, (ImVec4)ImColor(0.0f, 0.0f, 0.0f));
+                }
+
+                if (ImGui::Button(std::to_string(i).c_str(), button_sz))
+                {
+                    sSwitchStates_5C1A28.mData[i] = !sSwitchStates_5C1A28.mData[i];
+                }
+
+                if (active)
+                {
+                    ImGui::PopStyleColor();
+                    ImGui::PopStyleColor();
+                }
+                if ((i + 1) % 8 != 0)
+                {
+                    ImGui::SameLine();
+                }
+            }
+            ImGui::PopStyleVar();
+            ImGui::End();
+        }
+    }
+}
+
+bool gDebugUIEnabled_WorldState = false;
+void Debug_UI_WorldState()
+{
+    if (gDebugUIEnabled_WorldState)
+    {
+        if (!ImGui::Begin("World State", &gDebugUIEnabled_WorldState))
+        {
+            ImGui::End();
+        }
+        else
+        {
+            //sActiveHero_5C1B68->field_114_flags.Set(Flags_114::e114_Bit9);
+            //sStatsSignCurrentArea_5C1A20 = pInfo->field_2C_stats_sign_current_area;
+            //sKilledMudokons_5C1BC0 = pInfo->field_14_killed_muds;
+            //sRescuedMudokons_5C1BC2 = pInfo->field_12_saved_muds;
+            //sMudokonsInArea_5C1BC4 = pInfo->field_16_muds_in_area; // TODO: Check types
+            //gTotalMeterBars_5C1BFA = pInfo->field_2D_total_meter_bars;
+            //gbDrawMeterCountDown_5C1BF8 = pInfo->field_30_bDrawMeterCountDown;
+            //sGasTimer_5C1BE8 = pInfo->field_38_gas_timer;
+            //gAbeBulletProof_5C1BDA = pInfo->field_3C_bBulletProof;
+            //sVisitedBonewerks_5C1C02 = pInfo->field_32_visited_bonewerks;
+            //sVisitedBarracks_5C1C04 = pInfo->field_34_visited_barracks;
+            //sVisitedFeecoEnder_5C1C06 = pInfo->field_36_visited_feeco_ender;
+            //sGnFrame_5C1B84 = pInfo->field_0_gnFrame;
+
+            short shortStep = 1;
+
+            ImGui::InputScalar("Killed Mudokons", ImGuiDataType_U16, &sKilledMudokons_5C1BC0, &shortStep, false, "%d");
+            ImGui::InputScalar("sRescuedMudokons_5C1BC2", ImGuiDataType_U16, &sRescuedMudokons_5C1BC2, &shortStep, false, "%d");
+            ImGui::InputScalar("sMudokonsInArea_5C1BC4", ImGuiDataType_U16, &sMudokonsInArea_5C1BC4, &shortStep, false, "%d");
+            ImGui::InputScalar("gTotalMeterBars_5C1BFA", ImGuiDataType_U16, &gTotalMeterBars_5C1BFA, &shortStep, false, "%d");
+            ImGui::InputScalar("gbDrawMeterCountDown_5C1BF8", ImGuiDataType_U16, &gbDrawMeterCountDown_5C1BF8, &shortStep, false, "%d");
+            ImGui::InputScalar("sGasTimer_5C1BE8", ImGuiDataType_U16, &sGasTimer_5C1BE8, &shortStep, false, "%d");
+            ImGui::InputScalar("gAbeBulletProof_5C1BDA", ImGuiDataType_U16, &gAbeBulletProof_5C1BDA, &shortStep, false, "%d");
+            ImGui::InputScalar("sVisitedBonewerks_5C1C02", ImGuiDataType_U16, &sVisitedBonewerks_5C1C02, &shortStep, false, "%d");
+            ImGui::InputScalar("sVisitedBarracks_5C1C04", ImGuiDataType_U16, &sVisitedBarracks_5C1C04, &shortStep, false, "%d");
+            ImGui::InputScalar("sVisitedFeecoEnder_5C1C06", ImGuiDataType_U16, &sVisitedFeecoEnder_5C1C06, &shortStep, false, "%d");
+            ImGui::InputScalar("sGnFrame_5C1B84", ImGuiDataType_U32, &sGnFrame_5C1B84, false, false, "%d");
+
+            ImGui::End();
+        }
+    }
+}
+
+void DebugOnFrameEnd()
+{
+    SDL_ShowCursor(1);
+    //ImGui::ShowDemoWindow();
+
+    if (ImGui::BeginMainMenuBar())
+    {
+        if (ImGui::BeginMenu("Game"))
+        {
+            if (ImGui::BeginMenu("Teleport"))
+            {
+                for (int i = 0; i < 17; i++)
+                {
+                    if (ImGui::MenuItem(gPerLvlData_561700[i].field_0_display_name, NULL, false, true))
+                    {
+                        TeleportViaLvlIndex(i);
+                    }
+                }
+
+                ImGui::EndMenu(); // Teleport
+            }
+
+            ImGui::EndMenu(); // Game
+        }
+
+        if (ImGui::BeginMenu("Options"))
+        {
+            if (ImGui::BeginMenu("Sound"))
+            {
+                ImGui::MenuItem("Reverb", NULL, &gReverbEnabled, true);
+                ImGui::MenuItem("Stereo", NULL, &gAudioStereo, true);
+
+                ImGui::EndMenu(); // Sound
+            }
+
+            if (ImGui::BeginMenu("Video"))
+            {
+                ImGui::MenuItem("Keep Aspect Ratio", NULL, &s_VGA_KeepAspectRatio, true);
+                ImGui::MenuItem("Filter Screen", NULL, &s_VGA_FilterScreen, true);
+
+                if (ImGui::MenuItem("Toggle Fullscreen", NULL, false, true))
+                {
+                    const Uint32 flags = SDL_GetWindowFlags(Sys_GetWindowHandle_4EE180());
+                    if (flags & SDL_WINDOW_FULLSCREEN_DESKTOP)
+                    {
+                        SDL_SetWindowFullscreen(Sys_GetWindowHandle_4EE180(), 0);
+                    }
+                    else
+                    {
+                        SDL_SetWindowFullscreen(Sys_GetWindowHandle_4EE180(), SDL_WINDOW_FULLSCREEN_DESKTOP);
+                    }
+                }
+
+                ImGui::EndMenu(); // Video
+            }
+
+            ImGui::EndMenu(); // Options
+        }
+
+        if (ImGui::BeginMenu("View"))
+        {
+            if (ImGui::BeginMenu("Windows"))
+            {
+                ImGui::MenuItem("Show Switch States", NULL, &gDebugUIEnabled_SwitchStates, true);
+                ImGui::MenuItem("Show World State", NULL, &gDebugUIEnabled_WorldState, true);
+
+                ImGui::EndMenu(); // Windows
+            }
+
+            ImGui::EndMenu(); // View
+        }
+
+        ImGui::EndMainMenuBar();
+    }
+
+    Debug_UI_SwitchStates();
+    Debug_UI_WorldState();
+    //if (sControlledCharacter_5C1B8C != nullptr)
+    //    Debug_UI_Object(sControlledCharacter_5C1B8C);
 }
 
 void Cheat_OpenAllDoors()

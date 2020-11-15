@@ -8,6 +8,13 @@
 #include "PsxRender.hpp"
 #include "Psx.hpp"
 #include "TouchController.hpp"
+#include "DebugHelpers.hpp"
+
+#if USE_SDL2
+#include <imgui.h>
+#include <imgui_impl_sdl.h>
+#include <imgui_sdl.h>
+#endif
 
 void VGA_ForceLink() {}
 
@@ -217,8 +224,25 @@ EXPORT void CC VGA_CopyToFront_4F3730(Bitmap* pBmp, RECT* pRect, int /*screenMod
         gTouchController->Render();
     }
 #endif
+
+    DebugOnFrameEnd();
+
+    ImGui::Render();
+    ImGuiSDL::Render(ImGui::GetDrawData());
    
     SDL_RenderPresent(gRenderer);
+
+    int w, h;
+    SDL_GetRendererOutputSize(gRenderer, &w, &h);
+
+    if (ImGui::GetIO().DisplaySize.x != w || ImGui::GetIO().DisplaySize.y != h)
+    {
+        ImGuiSDL::Deinitialize();
+        ImGuiSDL::Initialize(gRenderer, w, h);
+    }
+
+    ImGui::NewFrame();
+    ImGui_ImplSDL2_NewFrame(Sys_GetHWnd_4F2C70());
 }
 
 EXPORT void CC VGA_CopyToFront_4F3710(Bitmap* pBmp, RECT* pRect)
@@ -294,12 +318,19 @@ EXPORT signed int CC VGA_DisplaySet_4F32C0(unsigned __int16 width, unsigned __in
         sVGA_Inited_BC0BB8 = 1;
 
         gRenderer = SDL_CreateRenderer(Sys_GetHWnd_4F2C70(), -1, 0);
+        
         //  gRenderer = SDL_CreateSoftwareRenderer(sVGA_bmp_primary_BD2A20.field_0_pSurface);
         if (!gRenderer)
         {
             LOG_ERROR("Render create failed " << SDL_GetError());
             ALIVE_FATAL("Render create failed");
         }
+
+        ImGui::CreateContext();
+        ImGuiSDL::Initialize(gRenderer, 800, 600);
+
+        ImGui_ImplSDL2_InitForOpenGL(Sys_GetHWnd_4F2C70(), nullptr);
+
         SDL_RenderClear(gRenderer);
 
         switch (sVGA_bmp_primary_BD2A20.field_0_pSurface->format->BitsPerPixel)

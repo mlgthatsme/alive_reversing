@@ -13,6 +13,10 @@
 #include "PsxRender.hpp"
 #include "Sys.hpp"
 
+#if USE_SDL2
+#include <imgui.h>
+#endif
+
 ALIVE_VAR(1, 0x5C1130, PsxDisplay, gPsxDisplay_5C1130, {});
 
 
@@ -198,6 +202,55 @@ void PSX_DrawDebugTextBuffers(Bitmap* pBmp, const RECT& rect)
         return;
     }
 
+#if USE_SDL2
+    int entryCount = 0;
+
+    for (int i = 0; i < sFntCount_BD0F28; i++)
+    {
+        std::string s(sTexts_C27640[i].field_9_text.field_400_dst_txt);
+        entryCount += std::count(s.begin(), s.end(), '\n');
+    }
+
+    if (entryCount > 1)
+    {
+        const float DISTANCE = 30.0f;
+        static int corner = 0;
+        ImGuiIO& io = ImGui::GetIO();
+        ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+        if (corner != -1)
+        {
+            window_flags |= ImGuiWindowFlags_NoMove;
+            ImVec2 window_pos = ImVec2((corner & 1) ? io.DisplaySize.x - DISTANCE : DISTANCE, (corner & 2) ? io.DisplaySize.y - DISTANCE : DISTANCE);
+            ImVec2 window_pos_pivot = ImVec2((corner & 1) ? 1.0f : 0.0f, (corner & 2) ? 1.0f : 0.0f);
+            ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always, window_pos_pivot);
+        }
+        ImGui::SetNextWindowBgAlpha(0.35f); // Transparent background
+        if (ImGui::Begin("DDCheat Text", nullptr, window_flags))
+        {
+            for (int i = 0; i < sFntCount_BD0F28; i++)
+            {
+                DebugTexts* pRecord = &sTexts_C27640[i];
+                for (char* j = strtok(pRecord->field_9_text.field_400_dst_txt, "\n\r"); j; j = strtok(0, "\n\r"))
+                {
+                    //int fontColour = Bmp_Convert_Colour_4F17D0(&sPsxVram_C1D160, 255, 255, 191);
+                    ImGui::Text(j);
+                }
+            }
+
+            if (ImGui::BeginPopupContextWindow())
+            {
+                if (ImGui::MenuItem("Custom", NULL, corner == -1)) corner = -1;
+                if (ImGui::MenuItem("Top-left", NULL, corner == 0)) corner = 0;
+                if (ImGui::MenuItem("Top-right", NULL, corner == 1)) corner = 1;
+                if (ImGui::MenuItem("Bottom-left", NULL, corner == 2)) corner = 2;
+                if (ImGui::MenuItem("Bottom-right", NULL, corner == 3)) corner = 3;
+                //if (p_open && ImGui::MenuItem("Close")) *p_open = false;
+                ImGui::EndPopup();
+            }
+        }
+        ImGui::End();
+    }
+#else
     const LONG fontHeight = BMP_Get_Font_Height_4F21F0(pBmp);
     for (int i = 0; i < sFntCount_BD0F28; i++)
     {
@@ -212,6 +265,7 @@ void PSX_DrawDebugTextBuffers(Bitmap* pBmp, const RECT& rect)
             ypos += fontHeight;
         }
     }
+#endif
 }
 
 void PsxDisplay::ctor_41DC30()

@@ -66,6 +66,7 @@ endif()
 target_link_libraries(AliveLibCommon
     EasyLogging++
     googletest
+	imgui
     Cinder
     ${WIN32_LIBS}
     ${SDL2_LIBRARIES}

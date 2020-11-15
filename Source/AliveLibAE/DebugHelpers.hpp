@@ -68,5 +68,7 @@ bool IsStringNumber(const std::string& s);
 
 BaseGameObject * FindObjectOfType(int id);
 
+void DebugOnFrameEnd();
+
 // In game helper functions
 void Cheat_OpenAllDoors();

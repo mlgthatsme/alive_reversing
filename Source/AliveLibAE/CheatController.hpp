@@ -43,4 +43,5 @@ public:
 };
 ALIVE_ASSERT_SIZEOF(CheatController, 0x40);
 
+EXPORT void CC CheatController_Cheat_PathSkip_421B30();
 ALIVE_VAR_EXTERN(CheatController*, pCheatController_5BC120);

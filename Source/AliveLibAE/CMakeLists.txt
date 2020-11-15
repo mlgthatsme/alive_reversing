@@ -423,6 +423,7 @@ target_link_libraries(AliveLibAE
     EasyLogging++
     googletest
     Cinder
+	imgui
     ${WIN32_LIBS}
     ${SDL2_LIBRARIES}
     )

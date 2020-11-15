@@ -65,3 +65,20 @@ target_include_directories(googletest PUBLIC
 
 export(TARGETS googletest FILE googletest.cmake)
 set_property(TARGET googletest PROPERTY FOLDER "3rdParty")
+
+# imgui lib
+add_library(imgui
+    imgui/imgui.cpp
+	imgui/imgui_demo.cpp
+    imgui/imgui_draw.cpp
+	imgui/imgui_widgets.cpp
+	imgui/imgui_impl_sdl.cpp
+	imgui/imgui_sdl.cpp
+    )
+
+target_include_directories(imgui PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/imgui>
+    )
+
+export(TARGETS imgui FILE imgui.cmake)
+set_property(TARGET imgui PROPERTY FOLDER "3rdParty")

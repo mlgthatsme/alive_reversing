@@ -15,6 +15,9 @@
 #include "SDL.h"
 #include "SDL_syswm.h"
 #include "VGA.hpp"
+#include <imgui.h>
+#include <imgui_impl_sdl.h>
+#include <imgui_sdl.h>
 #endif
 
 #if _WIN32
@@ -777,10 +780,25 @@ EXPORT char CC Sys_PumpMessages_4EE4F4()
 {
 #if USE_SDL2
     SDL_Event event;
+    ImGuiIO& io = ImGui::GetIO();
+    int wheel = 0;
+
     while (SDL_PollEvent(&event)) 
     {
         // Pump events
+        ImGui_ImplSDL2_ProcessEvent(&event);
     }
+
+    int mouseX, mouseY;
+    const int buttons = SDL_GetMouseState(&mouseX, &mouseY);
+
+    //// Send input to ImGui
+
+    //io.DeltaTime = 1.0f / 60.0f;
+    //io.MousePos = ImVec2(static_cast<float>(mouseX), static_cast<float>(mouseY));
+    //io.MouseDown[0] = buttons & SDL_BUTTON(SDL_BUTTON_LEFT);
+    //io.MouseDown[1] = buttons & SDL_BUTTON(SDL_BUTTON_RIGHT);
+    //io.MouseWheel = static_cast<float>(wheel);
 
     if (bNeedToQuit)
     {
