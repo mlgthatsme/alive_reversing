@@ -1125,13 +1125,6 @@ public:
             /*it++*/)
         {
             auto message = it;
-            int targetY = 232 - (i * 9) - 9;
-
-            message->y = static_cast<float>(targetY);
-
-            pIndex = mFont.DrawString_4337D0(pOrderingTable, message->message.c_str(), 0, static_cast<short>(message->y), 0, 1, 0, 40, message->r, message->g, message->b, pIndex, FP_FromDouble(1.0), 640, 0);
-            pIndex = mFont.DrawString_4337D0(pOrderingTable, message->message.c_str(), 1, static_cast<short>(message->y) + 1, 0, 1, 0, 40, 0, 0, 0, pIndex, FP_FromDouble(1.0), 640, 0);
-        
             message->time--;
 
             if (message->time <= 0 || i > 64)
@@ -1145,12 +1138,12 @@ public:
             }
         }
 
-        if (mCommandLineEnabled)
-        {
-            std::string trail = (sGnFrame_5C1B84 % 10 < 5) ? "" : "_";
-            pIndex = mFont.DrawString_4337D0(pOrderingTable, (">" + mCommandLineInput + trail).c_str(), 0, 232, 0, 1, 0, 40, 255, 255, 255, pIndex, FP_FromDouble(1.0), 640, 0);
-            pIndex = mFont.DrawString_4337D0(pOrderingTable, (" " + mAutoComplete).c_str(), 0, 232, 0, 1, 0, 40, 30, 30, 30, pIndex, FP_FromDouble(1.0), 640, 0);
-        }
+        //if (mCommandLineEnabled)
+        //{
+        //    std::string trail = (sGnFrame_5C1B84 % 10 < 5) ? "" : "_";
+        //    //pIndex = mFont.DrawString_4337D0(pOrderingTable, (">" + mCommandLineInput + trail).c_str(), 0, 232, 0, 1, 0, 40, 255, 255, 255, pIndex, FP_FromDouble(1.0), 640, 0);
+        //    //pIndex = mFont.DrawString_4337D0(pOrderingTable, (" " + mAutoComplete).c_str(), 0, 232, 0, 1, 0, 40, 30, 30, 30, pIndex, FP_FromDouble(1.0), 640, 0);
+        //}
     }
 
     Alive::Font mFont;
@@ -2389,10 +2382,71 @@ void Debug_UI_WorldState()
     }
 }
 
+void DebugUI_Console()
+{
+    ImGuiIO& io = ImGui::GetIO();
+
+    ImVec2 window_pos = ImVec2(0, io.DisplaySize.y);
+    ImVec2 window_pos_pivot = ImVec2(0.0f, 1.0f);
+    ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always, window_pos_pivot);
+
+    if (!ImGui::Begin("Console", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize))
+    {
+        ImGui::End();
+    }
+    else
+    {
+        for (int i = sDebugConsoleMessages.size() - 1; i >= 0; i--)
+        {
+            DebugConsoleMessage log = sDebugConsoleMessages[i];
+            ImGui::PushStyleColor(ImGuiCol_Text, (ImVec4)ImColor(log.r / 255.0f, log.g / 255.0f, log.b / 255.0f));
+            ImGui::Text(log.message.c_str());
+            ImGui::PopStyleColor();
+        }
+        static char InputBuf[256];
+        if (ImGui::InputText("Input", InputBuf, IM_ARRAYSIZE(InputBuf), ImGuiInputTextFlags_EnterReturnsTrue, false, false))
+        {
+            auto command = StringToLower(InputBuf);
+            auto commandSplit = SplitString(command, ' ');
+
+            bool success = false;
+
+            strcpy(InputBuf, "");
+
+            if (!commandSplit.empty())
+            {
+                for (const auto& c : sDebugConsoleCommands)
+                {
+                    if (commandSplit[0] == c.command)
+                    {
+                        commandSplit.erase(commandSplit.begin());
+
+                        if (c.paramsCount == -1 || c.paramsCount == static_cast<int>(commandSplit.size()))
+                        {
+                            c.callback(commandSplit);
+                        }
+                        else
+                        {
+                            DEV_CONSOLE_MESSAGE_C("Command '" + c.command + "' was expecting " + std::to_string(c.paramsCount) + " args but got " + std::to_string(commandSplit.size()), 6, 127, 0, 0);
+                        }
+
+                        success = true;
+                        break;
+                    }
+                }
+
+                if (!success)
+                    DEV_CONSOLE_MESSAGE_C("Unknown command '" + command + "' Type help for more info.", 6, 127, 0, 0);
+            }
+        }
+        ImGui::End();
+    }
+}
+
 void DebugOnFrameEnd()
 {
     SDL_ShowCursor(1);
-    //ImGui::ShowDemoWindow();
+    ImGui::ShowDemoWindow();
 
     if (ImGui::BeginMainMenuBar())
     {
@@ -2466,6 +2520,7 @@ void DebugOnFrameEnd()
 
     Debug_UI_SwitchStates();
     Debug_UI_WorldState();
+    DebugUI_Console();
     //if (sControlledCharacter_5C1B8C != nullptr)
     //    Debug_UI_Object(sControlledCharacter_5C1B8C);
 }
