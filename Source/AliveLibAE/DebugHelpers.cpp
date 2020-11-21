@@ -2467,8 +2467,10 @@ void DebugUI_Console()
 
 void DebugOnFrameEnd()
 {
+    if (!gDebugHelpersEnabled)
+        return;
+
     SDL_ShowCursor(1);
-    ImGui::ShowDemoWindow();
 
     if (ImGui::BeginMainMenuBar())
     {
