@@ -188,6 +188,12 @@ private:
 ALIVE_ASSERT_SIZEOF(ResourceManager, 0x54);
 
 ALIVE_VAR_EXTERN(ResourceManager*, pResourceManager_5C1BB0);
+ALIVE_VAR_EXTERN(ResourceManager::ResourceHeapItem*, sFirstLinkedListItem_5D29EC);
+ALIVE_VAR_EXTERN(ResourceManager::ResourceHeapItem*, sSecondLinkedListItem_5D29E8);
+
+const DWORD kLinkedListArraySize = 375;
+ALIVE_ARY_EXTERN(ResourceManager::ResourceHeapItem, kLinkedListArraySize, sResourceLinkedList_5D1E30);
+
 ALIVE_VAR_EXTERN(DWORD, sManagedMemoryUsedSize_AB4A04);
 ALIVE_VAR_EXTERN(DWORD, sPeakedManagedMemUsage_AB4A08);
 ALIVE_VAR_EXTERN(short, sbLoadingInProgress_5C1B96);

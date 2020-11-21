@@ -753,6 +753,8 @@ EXPORT void CC Game_Loop_467230()
         Slurg::Clear_Slurg_Step_Watch_Points_449A90();
         bSkipGameObjectUpdates_5C2FA0 = 0;
 
+        Debug_Help_Update();
+
         // Update objects
         for (int baseObjIdx = 0; baseObjIdx < gBaseGameObject_list_BB47C4->Size(); baseObjIdx++)
         {

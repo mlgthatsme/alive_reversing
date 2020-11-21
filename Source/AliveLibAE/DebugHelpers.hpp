@@ -68,6 +68,7 @@ bool IsStringNumber(const std::string& s);
 
 BaseGameObject * FindObjectOfType(int id);
 
+void Debug_Help_Update();
 void DebugOnFrameEnd();
 
 // In game helper functions

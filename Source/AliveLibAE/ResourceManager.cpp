@@ -28,7 +28,6 @@ ALIVE_VAR(1, 0x5D29E8, ResourceManager::ResourceHeapItem*, sSecondLinkedListItem
 const DWORD kResHeapSize = 5120000;
 ALIVE_ARY(1, 0x5D29F4, BYTE, kResHeapSize, sResourceHeap_5D29F4, {}); // Huge 5.4 MB static resource buffer
 
-const DWORD kLinkedListArraySize = 375;
 ALIVE_ARY(1, 0x5D1E30, ResourceManager::ResourceHeapItem, kLinkedListArraySize, sResourceLinkedList_5D1E30, {});
 
 ALIVE_VAR(1, 0xAB49F8, BYTE*, spResourceHeapEnd_AB49F8, nullptr);

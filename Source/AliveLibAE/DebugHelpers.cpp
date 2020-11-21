@@ -143,7 +143,7 @@ public:
         return false;
     }
 
-    void DrawObjectIDs(int**pOrderingTable)
+    void DrawObjectIDs(int** pOrderingTable)
     {
         /*struct MainMenuButton
         {
@@ -205,7 +205,7 @@ public:
     }
 
     bool isDragging = false;
-    BaseAnimatedWithPhysicsGameObject * mDragObject;
+    BaseAnimatedWithPhysicsGameObject* mDragObject;
 
     void DrawUI(int** /*pOrderingTable*/)
     {
@@ -339,7 +339,7 @@ public:
     }
 
     struct LineColor { BYTE r; BYTE g; BYTE b; };
-    std::map<int, LineColor> mLineColors = { 
+    std::map<int, LineColor> mLineColors = {
         { 0,{ 255, 0, 0 } }, // Floor
         { 1,{ 0, 0, 255 } }, // Left Wall
         { 3,{ 255, 0, 0 } }, // Ceiling
@@ -444,7 +444,7 @@ static std::vector<DebugConsoleMessage> sDebugConsoleMessages;
 void ShowDebugConsoleMessage(std::string message, float duration, BYTE r, BYTE g, BYTE b)
 {
     auto lines = SplitString(message, '\n');
-    
+
     for (auto l : lines)
     {
         sDebugConsoleMessages.insert(sDebugConsoleMessages.begin(), { l, static_cast<int>(30 * duration), 250, r, g, b });
@@ -547,7 +547,7 @@ void Command_HelperUpdate()
         FP rX = FP_FromInteger(0);
         FP rY = FP_FromInteger(0);
         PathLine* rUnk = nullptr;
-        
+
         float subDevide = 368 / 10.0f;
         for (int i = 0; i < 10; i++)
         {
@@ -573,12 +573,12 @@ void Command_HelperUpdate()
                 break;
             }
         }
-        
+
         sControlledCharacter_5C1B8C = sActiveHero_5C1B68;
     }
 }
 
-void Command_ToggleBool(bool * var, std::string varName)
+void Command_ToggleBool(bool* var, std::string varName)
 {
     *var = !*var;
     DEV_CONSOLE_MESSAGE(varName + " is now " + std::string(((*var) ? "On" : "Off")), 6);
@@ -594,7 +594,7 @@ void Command_Teleport(const std::vector<std::string>& args)
     else
     {
         bool found = false;
-        for (short i = 0; i < sizeof(sPathData_559660.paths) / sizeof(PathRoot);i++)
+        for (short i = 0; i < sizeof(sPathData_559660.paths) / sizeof(PathRoot); i++)
         {
             if (!strcmpi(sPathData_559660.paths[i].field_14_lvl_name, args[0].c_str()))
             {
@@ -603,7 +603,7 @@ void Command_Teleport(const std::vector<std::string>& args)
                 break;
             }
         }
-        
+
         if (!found)
         {
             DEV_CONSOLE_MESSAGE("Cannot find level specified!", 6);
@@ -612,7 +612,7 @@ void Command_Teleport(const std::vector<std::string>& args)
     short path = static_cast<short>(std::stoi(args[1]));
     short cam = static_cast<short>(std::stoi(args[2]));
     gMap_5C3030.SetActiveCam_480D30(static_cast<LevelIds>(level), path, cam, CameraSwapEffects::eEffect5_1_FMV, 0, 0);
-    
+
 
     sHasTeleported = true;
 
@@ -653,29 +653,29 @@ void Command_Midi1(const std::vector<std::string>& args)
 
 void Command_LoadSave(const std::vector<std::string>& args)
 {
-	if (pPauseMenu_5C9300 == nullptr)
-	{
-		pPauseMenu_5C9300 = ae_new<PauseMenu>();
-		pPauseMenu_5C9300->ctor_48FB80();
-		pPauseMenu_5C9300->field_1C_update_delay = 0;
-	}
+    if (pPauseMenu_5C9300 == nullptr)
+    {
+        pPauseMenu_5C9300 = ae_new<PauseMenu>();
+        pPauseMenu_5C9300->ctor_48FB80();
+        pPauseMenu_5C9300->field_1C_update_delay = 0;
+    }
 
-	std::string filePath = args[0] + ".sav";
+    std::string filePath = args[0] + ".sav";
 
-	std::ifstream saveFile(filePath.c_str());
+    std::ifstream saveFile(filePath.c_str());
 
-	if (!saveFile.fail())
-	{
-		saveFile.read((char*)&sActiveQuicksaveData_BAF7F8, sizeof(sActiveQuicksaveData_BAF7F8));
-		Quicksave_LoadActive_4C9170();
-		saveFile.close();
-		DEV_CONSOLE_PRINTF("Loaded Save %s", filePath.c_str());
-	}
-	else
-	{
-		DEV_CONSOLE_PRINTF("Failed to load save %s", filePath.c_str());
-	}
-	
+    if (!saveFile.fail())
+    {
+        saveFile.read((char*)&sActiveQuicksaveData_BAF7F8, sizeof(sActiveQuicksaveData_BAF7F8));
+        Quicksave_LoadActive_4C9170();
+        saveFile.close();
+        DEV_CONSOLE_PRINTF("Loaded Save %s", filePath.c_str());
+    }
+    else
+    {
+        DEV_CONSOLE_PRINTF("Failed to load save %s", filePath.c_str());
+    }
+
 }
 
 void Command_DDV(const std::vector<std::string>& args)
@@ -705,7 +705,7 @@ void Command_SetState(const std::vector<std::string>& args)
         return;
     }
 
-    __int16  state = static_cast<__int16 >(std::stoi(args[0]));
+    __int16  state = static_cast<__int16>(std::stoi(args[0]));
     Abe* pAbe = static_cast<Abe*>(sControlledCharacter_5C1B8C);
     auto resource = pAbe->StateToAnimResource_44AAB0(state);
 
@@ -771,7 +771,7 @@ void Command_Spawn(const std::vector<std::string>& args)
 
     FP hitX;
     FP hitY;
-    PathLine * pLine;
+    PathLine* pLine;
     if (sCollisions_DArray_5C1128->Raycast_417A60(FP_FromInteger(spawnX), FP_FromInteger(spawnY), FP_FromInteger(spawnX), FP_FromInteger(spawnY + 1000), &pLine, &hitX, &hitY, 1))
     {
         spawnX = FP_GetExponent(hitX);
@@ -793,7 +793,7 @@ void Command_Spawn(const std::vector<std::string>& args)
 
     char blankMemory[512];
     memset(blankMemory, 0, sizeof(blankMemory));
-    Path_TLV * basicTlvPath = reinterpret_cast<Path_TLV*>(&blankMemory);
+    Path_TLV* basicTlvPath = reinterpret_cast<Path_TLV*>(&blankMemory);
     basicTlvPath->field_8_top_left = spawnTopLeft;
     basicTlvPath->field_C_bottom_right = spawnBottomRight;
 
@@ -882,7 +882,7 @@ std::vector<DebugConsoleCommand> sDebugConsoleCommands = {
     { "state", 1, Command_SetState, "Sets currently controlled objects state." },
     { "ddv", 1, Command_DDV, "Plays a ddv" },
     { "spawn", 1, Command_Spawn, "Spawns an object" },
-	{ "loadsave", 1, Command_LoadSave, "Loads a Save" },
+    { "loadsave", 1, Command_LoadSave, "Loads a Save" },
     { "bind", -1, Command_Bind, "Binds a key to a command" },
     { "ring", 1, Command_Ring, "Emits a ring" },
     { "midi1", 1, Command_Midi1, "Play sound using midi func 1" },
@@ -891,270 +891,6 @@ std::vector<DebugConsoleCommand> sDebugConsoleCommands = {
     { "pcopen", -1, [](const std::vector<std::string>& /*args*/) { Command_ToggleBool(reinterpret_cast<bool*>(&sbEnable_PCOpen_5CA4B0), "PCOpen"); }, "Toggles PCOpen" },
 };
 //
-
-class DebugConsole : public BaseGameObject
-{
-public:
-    DebugConsole()
-    {
-        DisableVTableHack disableHack;
-
-        BaseGameObject_ctor_4DBFA0(1, 1);
-        field_6_flags.Set(BaseGameObject::eDrawable_Bit4);
-        field_6_flags.Set(BaseGameObject::eSurviveDeathReset_Bit9);
-        field_4_typeId = Types::eDebugConsole_1002;
-        
-        mFontContext.LoadFontTypeCustom(reinterpret_cast<File_Font*>(sDebugFont), reinterpret_cast<Font_AtlasEntry*>(sDebugFontAtlas), mFontPalette);
-        mFont.ctor_433590(4096 * 2, reinterpret_cast<BYTE*>(mFontPalette), &mFontContext);
-
-        gObjList_drawables_5C1124->Push_Back(this);
-
-        InitDebugFont();
-
-        Map::LoadResource_4DBE00("ABEBLOW.BAN", ResourceManager::Resource_Animation, kAbeblowResID, 0, 0);
-        Map::LoadResource_4DBE00("EXPLODE.BND", ResourceManager::Resource_Animation, kAbebombResID, 0, 0);
-        Map::LoadResource_4DBE00("EXPLODE.BND", ResourceManager::Resource_Animation, kDebrisID00, 0, 0);
-        Map::LoadResource_4DBE00("EXPLODE.BND", ResourceManager::Resource_Animation, kBgexpldResID, 0, 0);
-    }
-
-    void Destruct()
-    {
-        BaseGameObject_dtor_4DBEC0();
-        gObjList_drawables_5C1124->Remove_Item(this);
-    }
-
-    virtual BaseGameObject* VDestructor(signed int flags) override
-    {
-        Destruct();
-        if (flags & 1)
-        {
-            ae_delete_free_495540(this);
-        }
-        return this;
-    }
-
-    void ParseCommand(std::string command)
-    {
-        command = StringToLower(command);
-        auto commandSplit = SplitString(command, ' ');
-
-        if (!commandSplit.empty())
-        {
-            for (const auto& c : sDebugConsoleCommands)
-            {
-                if (commandSplit[0] == c.command)
-                {
-                    commandSplit.erase(commandSplit.begin());
-
-                    if (c.paramsCount == -1 || c.paramsCount == static_cast<int>(commandSplit.size()))
-                    {
-                        c.callback(commandSplit);
-                    }
-                    else
-                    {
-                        DEV_CONSOLE_MESSAGE_C("Command '" + c.command + "' was expecting " + std::to_string(c.paramsCount) + " args but got " + std::to_string(commandSplit.size()), 6, 127, 0, 0);
-                    }
-                    
-                    return;
-                }
-            }
-
-            DEV_CONSOLE_MESSAGE_C("Unknown command '" + command + "' Type help for more info.", 6, 127, 0, 0);
-        }
-    }
-
-    std::string GetAutoComplete(std::string s)
-    {
-        s = StringToLower(s);
-        for (auto c : sDebugConsoleCommands)
-        {
-            if (StringStartsWith(c.command, s))
-            {
-                return c.command;
-            }
-        }
-
-        return "";
-    }
-
-    virtual void VUpdate() override
-    {
-        if (g_DisableMusic)
-        {
-            MusicController::EnableMusic_47FE10(FALSE);
-        }
-
-        static bool hasRunAutorun = false;
-        static int autoRunWait = 1;
-        if (!hasRunAutorun && autoRunWait <= 0)
-        {
-            // Runs some commands on game startup
-            auto autoRun = FS::ReadFile("autorun.conf");
-            autoRun.push_back(0);
-
-            if (!autoRun.empty())
-            {
-                std::string str = std::string(reinterpret_cast<const char *>(autoRun.data()));
-
-                str.erase(std::remove(str.begin(), str.end(), '\r'), str.end());
-
-                auto lines = SplitString(str, '\n');
-
-                for (auto &command : lines)
-                {
-                    ParseCommand(command);
-                }
-            }
-
-            hasRunAutorun = true;
-        }
-
-        autoRunWait--;
-
-        char titleBuffer[1000];
-        char camBuffer[32];
-        Path_Format_CameraName_460FB0(
-            camBuffer,
-            gMap_5C3030.field_0_current_level,
-            gMap_5C3030.field_2_current_path,
-            gMap_5C3030.field_4_current_camera);
-        sprintf(titleBuffer, "Oddworld Abe's Exoddus DEV MODE - %s", camBuffer);
-        Sys_SetWindowText(Sys_GetHWnd_4F2C70(), titleBuffer);
-
-        Command_HelperUpdate();
-
-        const char key = static_cast<char>(Input_GetLastPressedKey_492610());
-        if (Input_IsVKPressed_4EDD40(VK_OEM_3))
-        {
-            mCommandLineEnabled = !mCommandLineEnabled;
-
-            if (mCommandLineEnabled)
-            {
-                Input_DisableInputForPauseMenuAndDebug_4EDDC0();
-            }
-            else
-            {
-                Input_EnableInput_4EDDD0();
-            }
-        }
-        
-        
-#if USE_SDL2
-        static Uint8 keyStatesPrev[256];
-        auto keyStates = SDL_GetKeyboardState(nullptr);
-        
-
-        for (const auto& bind : gDebugKeyBinds)
-        {
-            auto scanCode = SDL_GetScancodeFromKey(SDL_GetKeyFromName(bind.key.c_str()));
-            if (keyStates[scanCode] && !keyStatesPrev[scanCode])
-            {
-                ParseCommand(bind.command);
-            }
-        }
-
-        memcpy(keyStatesPrev, keyStates, sizeof(keyStatesPrev));
-#endif
-
-        const char* allowedChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789 .!-+@#$%^&*()_\"'";
-
-        if (Input_IsVKPressed_4EDD40(VK_UP) && mCommandLineEnabled)
-        {
-            mCommandLineInput = mLastCommand;
-        }
-
-        if (mCommandLineEnabled && key > 0)
-        {
-            switch (key)
-            {
-            case VK_BACK:
-                if (mCommandLineInput.size() > 0)
-                {
-                    mCommandLineInput.pop_back();
-                }
-                break;
-            case VK_RETURN:
-                if (mCommandLineInput.size() > 0)
-                {
-                    ParseCommand(mCommandLineInput);
-                    mLastCommand = mCommandLineInput;
-                    mCommandLineInput.clear();
-                }
-
-                mCommandLineEnabled = false;
-                Input_EnableInput_4EDDD0();
-                Input_Reset_492660();
-                break;
-            case VK_TAB:
-                if (mAutoComplete.size() > 0)
-                {
-                    mCommandLineInput = mAutoComplete;
-                }
-                break;
-            default:
-                if (strspn(&key, allowedChars))
-                {
-                    mCommandLineInput += key;
-                }
-                break;
-            }
-
-            if (mCommandLineInput.size() > 0)
-            {
-                mAutoComplete = GetAutoComplete(mCommandLineInput);
-            }
-            else
-            {
-                mAutoComplete = "";
-            }
-        }
-    }
-
-    virtual void VScreenChanged() override
-    {
-        // Dont kill!
-    }
-
-    virtual void VRender(int** pOrderingTable) override
-    {
-        int pIndex = 0;
-
-        int i = 0;
-        for (std::vector<DebugConsoleMessage>::iterator it = sDebugConsoleMessages.begin();
-            it != sDebugConsoleMessages.end();
-            /*it++*/)
-        {
-            auto message = it;
-            message->time--;
-
-            if (message->time <= 0 || i > 64)
-            {
-                it = sDebugConsoleMessages.erase(it);
-            }
-            else
-            {
-                i++;
-                ++it;
-            }
-        }
-
-        //if (mCommandLineEnabled)
-        //{
-        //    std::string trail = (sGnFrame_5C1B84 % 10 < 5) ? "" : "_";
-        //    //pIndex = mFont.DrawString_4337D0(pOrderingTable, (">" + mCommandLineInput + trail).c_str(), 0, 232, 0, 1, 0, 40, 255, 255, 255, pIndex, FP_FromDouble(1.0), 640, 0);
-        //    //pIndex = mFont.DrawString_4337D0(pOrderingTable, (" " + mAutoComplete).c_str(), 0, 232, 0, 1, 0, 40, 30, 30, 30, pIndex, FP_FromDouble(1.0), 640, 0);
-        //}
-    }
-
-    Alive::Font mFont;
-    char mFontPalette[32];
-    Font_Context mFontContext;
-
-    bool mCommandLineEnabled = false;
-    std::string mCommandLineInput;
-    std::string mAutoComplete;
-    std::string mLastCommand;
-};
 
 struct PsxTimHeader
 {
@@ -1747,7 +1483,7 @@ private:
     short mWidth = 60;
     short mHeight = 150;
     short mXPos = 50;
-    short mYPos = 50/2;
+    short mYPos = 50 / 2;
     Poly_F3 mPolys[4];
 };
 
@@ -1949,7 +1685,7 @@ const BYTE kTestImageCompressed[] =
 class AnimRenderTest : public BaseGameObject
 {
 public:
-  
+
     AnimRenderTest()
     {
         DisableVTableHack disableHack;
@@ -2020,7 +1756,7 @@ private:
                 mAnim[i].Init_40A030(7812, gObjList_animations_5C1A24, this, 50, 25, mAnimRes[i], 1, 0, 0);
             }
             // No 16 bit test case because there are simply no 16bit sprites at all in the game data
-           
+
             mAnim[i].field_4_flags.Clear(AnimFlags::eBit16_bBlending);
             mAnim[i].field_4_flags.Clear(AnimFlags::eBit15_bSemiTrans);
 
@@ -2075,7 +1811,7 @@ private:
 
             SetXY0(&mPolyFT4[i], xpos, ypos);
             SetXY1(&mPolyFT4[i], xpos, ypos + h);
-            SetXY2(&mPolyFT4[i], xpos , ypos);
+            SetXY2(&mPolyFT4[i], xpos, ypos);
             SetXY3(&mPolyFT4[i], xpos + w, ypos + h);
 
             // This assumes the texture data is at 0,0 in the active texture page
@@ -2094,7 +1830,7 @@ private:
     Poly_FT4 mPolyFT4[1];
 };
 
-void DebugHelpers_Init() 
+void DebugHelpers_Init()
 {
 #if DEVELOPER_MODE
     if (Input_IsVKPressed_4EDD40(VK_LCONTROL))
@@ -2105,18 +1841,17 @@ void DebugHelpers_Init()
     //if (IsAlive())
     {
         ae_new<ObjectDebugger>();
-        ae_new<DebugConsole>();
         ae_new<DebugPathRenderer>();
 
         DEV_CONSOLE_MESSAGE_C("Debug Console Active. Open with ~ (Tilde)", 7, 0, 150, 255);
     }
 #endif
 
-//#if RENDER_TEST
-    // Test rendering diff prim types
-   // ae_new<RenderTest>(); // Will get nuked at LVL/Path change
-   //ae_new<AnimRenderTest>();
-//#endif
+    //#if RENDER_TEST
+        // Test rendering diff prim types
+       // ae_new<RenderTest>(); // Will get nuked at LVL/Path change
+       //ae_new<AnimRenderTest>();
+    //#endif
 }
 
 std::vector<BYTE> FS::ReadFile(std::string filePath)
@@ -2129,7 +1864,7 @@ std::vector<BYTE> FS::ReadFile(std::string filePath)
 std::string FS::GetPrefPath()
 {
 #if MOBILE
-    char * prefPath = SDL_GetPrefPath("Oddworld", "Abes Exoddus");
+    char* prefPath = SDL_GetPrefPath("Oddworld", "Abes Exoddus");
     std::string str = std::string(prefPath);
     SDL_free(prefPath);
     return str;
@@ -2254,7 +1989,7 @@ void TeleportViaLvlIndex(int index)
     DEV_CONSOLE_MESSAGE("Teleported to " + std::string(levelSelectEntry.field_0_display_name), 6);
 }
 
-void Debug_UI_Object(BaseAliveGameObject * pObj)
+void Debug_UI_Object(BaseAliveGameObject* pObj)
 {
     double min0 = 0;
     double max1 = 1;
@@ -2338,6 +2073,128 @@ void Debug_UI_SwitchStates()
     }
 }
 
+bool gDebugUIEnabled_Event;
+void Debug_UI_Event()
+{
+    if (gDebugUIEnabled_Event)
+    {
+        if (!ImGui::Begin("Events", &gDebugUIEnabled_Event))
+        {
+            ImGui::End();
+        }
+        else
+        {
+#define EVENT_BTN(id, value) if (ImGui::Button(id)) { Event_Broadcast_422BC0(static_cast<Event>(value), sControlledCharacter_5C1B8C);}
+
+            ImGui::Checkbox("Verbose Events", &sDebugEnabled_VerboseEvents);
+
+            EVENT_BTN("kEventNoise", 0);
+            EVENT_BTN("kEventSpeaking", 1);
+            EVENT_BTN("kEventShooting", 2);
+            EVENT_BTN("kEventHeroDying", 4);
+            EVENT_BTN("kEventDeathReset", 5);
+            EVENT_BTN("kEventDeathResetEnd", 6);
+            EVENT_BTN("kEventResetting", 7);
+            EVENT_BTN("kEventAbeOhm", 8);
+            EVENT_BTN("kEventSuspiciousNoise", 9);
+            EVENT_BTN("kEventLoudNoise", 10);
+            EVENT_BTN("kEventMudokonDied", 11);
+            EVENT_BTN("kEventMudokonLaugh", 12);
+            EVENT_BTN("kEventMudokonAbuse", 13);
+            EVENT_BTN("kEventMudokonComfort", 14);
+            EVENT_BTN("kEventUnknown17", 17);
+            EVENT_BTN("kEventAlarm", 18);
+            EVENT_BTN("kEventPortalOpen", 19);
+            EVENT_BTN("kEventUnknown20", 20);
+            EVENT_BTN("kEventScreenShake", 21);
+
+            ImGui::End();
+        }
+    }
+}
+
+bool gDebugUIEnabled_Resources;
+void Debug_UI_Resources()
+{
+    if (gDebugUIEnabled_Resources)
+    {
+        if (!ImGui::Begin("Resources", &gDebugUIEnabled_Resources))
+        {
+            ImGui::End();
+        }
+        else
+        {
+            if (sActiveHero_5C1B68)
+            {
+                if (ImGui::CollapsingHeader("Hero Resources"))
+                {
+                    for (int i = 0; i < sActiveHero_5C1B68->field_10_resources_array.Size(); i++)
+                    {
+                        auto pResource = sActiveHero_5C1B68->field_10_resources_array.ItemAt(i);
+                        if (pResource == nullptr)
+                        {
+                            ImGui::LabelText("Rsc", "%i - null", i, pResource);
+                        }
+                        else
+                        {
+                            std::string btnId = "Free##HeroResource" + std::to_string(i);
+                            if (ImGui::Button(btnId.c_str()))
+                            {
+                                ResourceManager::FreeResource_49C330(pResource);
+                            }
+
+                            ImGui::SameLine();
+
+                            ResourceManager::Header* pResHeader = ResourceManager::Get_Header_49C410(pResource);
+                            ImGui::LabelText("Rsc", "%i - %c%c%c%c id: %i", i,
+                                (pResHeader->field_8_type & 0xff),
+                                (pResHeader->field_8_type >> 8) & 0xff,
+                                (pResHeader->field_8_type >> 16) & 0xff,
+                                (pResHeader->field_8_type >> 24) & 0xff,
+                                pResHeader->field_C_id);
+
+                           
+                        }
+                    }
+                }
+            }
+
+            if (ImGui::CollapsingHeader("Loaded Resources"))
+            {
+                ResourceManager::ResourceHeapItem* pListIter = sResourceLinkedList_5D1E30;
+
+                int id = 0;
+                while (pListIter)
+                {
+                    std::string btnId = "Free##LoadedResource" + std::to_string(id);
+                    if (ImGui::Button(btnId.c_str()))
+                    {
+                        ResourceManager::FreeResource_49C330(&pListIter->field_0_ptr);
+                    }
+
+                    ImGui::SameLine();
+
+                    // Find something that matches the type and resource ID
+                    ResourceManager::Header* pResHeader = ResourceManager::Get_Header_49C410(&pListIter->field_0_ptr);
+
+                    ImGui::Text("%c%c%c%c id: %i",
+                        (pResHeader->field_8_type & 0xff),
+                        (pResHeader->field_8_type >> 8) & 0xff,
+                        (pResHeader->field_8_type >> 16) & 0xff,
+                        (pResHeader->field_8_type >> 24) & 0xff,
+                        pResHeader->field_C_id);
+
+                    pListIter = pListIter->field_4_pNext;
+                    id++;
+                }
+            }
+
+
+            ImGui::End();
+        }
+    }
+}
+
 bool gDebugUIEnabled_WorldState = false;
 void Debug_UI_WorldState()
 {
@@ -2349,20 +2206,6 @@ void Debug_UI_WorldState()
         }
         else
         {
-            //sActiveHero_5C1B68->field_114_flags.Set(Flags_114::e114_Bit9);
-            //sStatsSignCurrentArea_5C1A20 = pInfo->field_2C_stats_sign_current_area;
-            //sKilledMudokons_5C1BC0 = pInfo->field_14_killed_muds;
-            //sRescuedMudokons_5C1BC2 = pInfo->field_12_saved_muds;
-            //sMudokonsInArea_5C1BC4 = pInfo->field_16_muds_in_area; // TODO: Check types
-            //gTotalMeterBars_5C1BFA = pInfo->field_2D_total_meter_bars;
-            //gbDrawMeterCountDown_5C1BF8 = pInfo->field_30_bDrawMeterCountDown;
-            //sGasTimer_5C1BE8 = pInfo->field_38_gas_timer;
-            //gAbeBulletProof_5C1BDA = pInfo->field_3C_bBulletProof;
-            //sVisitedBonewerks_5C1C02 = pInfo->field_32_visited_bonewerks;
-            //sVisitedBarracks_5C1C04 = pInfo->field_34_visited_barracks;
-            //sVisitedFeecoEnder_5C1C06 = pInfo->field_36_visited_feeco_ender;
-            //sGnFrame_5C1B84 = pInfo->field_0_gnFrame;
-
             short shortStep = 1;
 
             ImGui::InputScalar("Killed Mudokons", ImGuiDataType_U16, &sKilledMudokons_5C1BC0, &shortStep, false, "%d");
@@ -2382,6 +2225,158 @@ void Debug_UI_WorldState()
     }
 }
 
+
+// In C++11 you'd be better off using lambdas for this sort of forwarding callbacks
+
+int TextEditCallback(ImGuiInputTextCallbackData* data)
+{
+    //AddLog("cursor: %d, selection: %d-%d", data->CursorPos, data->SelectionStart, data->SelectionEnd);
+    switch (data->EventFlag)
+    {
+    case ImGuiInputTextFlags_CallbackCompletion:
+    {
+        // Example of TEXT COMPLETION
+
+        // Locate beginning of current word
+        const char* word_end = data->Buf + data->CursorPos;
+        const char* word_start = word_end;
+        while (word_start > data->Buf)
+        {
+            const char c = word_start[-1];
+            if (c == ' ' || c == '\t' || c == ',' || c == ';')
+                break;
+            word_start--;
+        }
+
+        // Build a list of candidates
+        ImVector<const char*> candidates;
+        for (int i = 0; i < sDebugConsoleCommands.size(); i++)
+            if (strnicmp(sDebugConsoleCommands[i].command.c_str(), word_start, (int)(word_end - word_start)) == 0)
+                candidates.push_back(sDebugConsoleCommands[i].command.c_str());
+
+        if (candidates.Size == 0)
+        {
+        }
+        else if (candidates.Size == 1)
+        {
+            // Single match. Delete the beginning of the word and replace it entirely so we've got nice casing.
+            data->DeleteChars((int)(word_start - data->Buf), (int)(word_end - word_start));
+            data->InsertChars(data->CursorPos, candidates[0]);
+            data->InsertChars(data->CursorPos, " ");
+        }
+        else
+        {
+            // Multiple matches. Complete as much as we can..
+            // So inputing "C"+Tab will complete to "CL" then display "CLEAR" and "CLASSIFY" as matches.
+            int match_len = (int)(word_end - word_start);
+            for (;;)
+            {
+                int c = 0;
+                bool all_candidates_matches = true;
+                for (int i = 0; i < candidates.Size && all_candidates_matches; i++)
+                    if (i == 0)
+                        c = toupper(candidates[i][match_len]);
+                    else if (c == 0 || c != toupper(candidates[i][match_len]))
+                        all_candidates_matches = false;
+                if (!all_candidates_matches)
+                    break;
+                match_len++;
+            }
+
+            if (match_len > 0)
+            {
+                data->DeleteChars((int)(word_start - data->Buf), (int)(word_end - word_start));
+                data->InsertChars(data->CursorPos, candidates[0], candidates[0] + match_len);
+            }
+        }
+
+        break;
+    }
+    return 0;
+    }
+};
+
+void ParseCommand(std::string cmd)
+{
+    auto command = StringToLower(cmd);
+    auto commandSplit = SplitString(command, ' ');
+
+    bool success = false;
+
+    if (!commandSplit.empty())
+    {
+        for (const auto& c : sDebugConsoleCommands)
+        {
+            if (commandSplit[0] == c.command)
+            {
+                commandSplit.erase(commandSplit.begin());
+
+                if (c.paramsCount == -1 || c.paramsCount == static_cast<int>(commandSplit.size()))
+                {
+                    c.callback(commandSplit);
+                }
+                else
+                {
+                    DEV_CONSOLE_MESSAGE_C("Command '" + c.command + "' was expecting " + std::to_string(c.paramsCount) + " args but got " + std::to_string(commandSplit.size()), 6, 127, 0, 0);
+                }
+
+                success = true;
+                break;
+            }
+        }
+
+        if (!success)
+            DEV_CONSOLE_MESSAGE_C("Unknown command '" + command + "' Type help for more info.", 6, 127, 0, 0);
+    }
+}
+
+void Debug_Help_Update()
+{
+    if (g_DisableMusic)
+    {
+        MusicController::EnableMusic_47FE10(FALSE);
+    }
+
+    static bool hasRunAutorun = false;
+    static int autoRunWait = 1;
+    if (!hasRunAutorun && autoRunWait <= 0)
+    {
+        // Runs some commands on game startup
+        auto autoRun = FS::ReadFile("autorun.conf");
+        autoRun.push_back(0);
+
+        if (!autoRun.empty())
+        {
+            std::string str = std::string(reinterpret_cast<const char*>(autoRun.data()));
+
+            str.erase(std::remove(str.begin(), str.end(), '\r'), str.end());
+
+            auto lines = SplitString(str, '\n');
+
+            for (auto& command : lines)
+            {
+                ParseCommand(command);
+            }
+        }
+
+        hasRunAutorun = true;
+    }
+
+    autoRunWait--;
+
+    char titleBuffer[1000];
+    char camBuffer[32];
+    Path_Format_CameraName_460FB0(
+        camBuffer,
+        gMap_5C3030.field_0_current_level,
+        gMap_5C3030.field_2_current_path,
+        gMap_5C3030.field_4_current_camera);
+    sprintf(titleBuffer, "Oddworld Abe's Exoddus DEV MODE - %s", camBuffer);
+    Sys_SetWindowText(Sys_GetHWnd_4F2C70(), titleBuffer);
+
+    Command_HelperUpdate();
+}
+
 void DebugUI_Console()
 {
     ImGuiIO& io = ImGui::GetIO();
@@ -2396,6 +2391,48 @@ void DebugUI_Console()
     }
     else
     {
+        static char InputBuf[256];
+        bool reclaim_focus = false;
+        if (ImGui::InputText("Input", InputBuf, IM_ARRAYSIZE(InputBuf), ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackCompletion, &TextEditCallback, false))
+        {
+            reclaim_focus = true;
+            ParseCommand(std::string(InputBuf));
+
+            strcpy(InputBuf, "");
+        }
+
+        static bool lastWindowState = true;
+        if (ImGui::IsWindowFocused(ImGuiFocusedFlags_AnyWindow))
+        {
+            Input_DisableInputForPauseMenuAndDebug_4EDDC0();
+            lastWindowState = true;
+        }
+        else if (lastWindowState)
+        {
+            Input_EnableInput_4EDDD0();
+            lastWindowState = false;
+        }
+
+        ImGui::SetItemDefaultFocus();
+        if (reclaim_focus)
+            ImGui::SetKeyboardFocusHere(-1); // Auto focus previous widget
+
+
+        auto consoleSize = ImGui::GetWindowSize();
+        window_pos = ImVec2(0, io.DisplaySize.y - consoleSize.y - 5);
+
+        ImGui::End();
+    }
+
+    ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always, window_pos_pivot);
+    
+
+    if (!ImGui::Begin("Console Output", nullptr, ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoMove | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoNavFocus))
+    {
+        ImGui::End();
+    }
+    else
+    {
         for (int i = sDebugConsoleMessages.size() - 1; i >= 0; i--)
         {
             DebugConsoleMessage log = sDebugConsoleMessages[i];
@@ -2403,45 +2440,30 @@ void DebugUI_Console()
             ImGui::Text(log.message.c_str());
             ImGui::PopStyleColor();
         }
-        static char InputBuf[256];
-        if (ImGui::InputText("Input", InputBuf, IM_ARRAYSIZE(InputBuf), ImGuiInputTextFlags_EnterReturnsTrue, false, false))
-        {
-            auto command = StringToLower(InputBuf);
-            auto commandSplit = SplitString(command, ' ');
 
-            bool success = false;
-
-            strcpy(InputBuf, "");
-
-            if (!commandSplit.empty())
-            {
-                for (const auto& c : sDebugConsoleCommands)
-                {
-                    if (commandSplit[0] == c.command)
-                    {
-                        commandSplit.erase(commandSplit.begin());
-
-                        if (c.paramsCount == -1 || c.paramsCount == static_cast<int>(commandSplit.size()))
-                        {
-                            c.callback(commandSplit);
-                        }
-                        else
-                        {
-                            DEV_CONSOLE_MESSAGE_C("Command '" + c.command + "' was expecting " + std::to_string(c.paramsCount) + " args but got " + std::to_string(commandSplit.size()), 6, 127, 0, 0);
-                        }
-
-                        success = true;
-                        break;
-                    }
-                }
-
-                if (!success)
-                    DEV_CONSOLE_MESSAGE_C("Unknown command '" + command + "' Type help for more info.", 6, 127, 0, 0);
-            }
-        }
         ImGui::End();
     }
+
+    int i = 0;
+    for (std::vector<DebugConsoleMessage>::iterator it = sDebugConsoleMessages.begin();
+        it != sDebugConsoleMessages.end();
+        /*it++*/)
+    {
+        auto message = it;
+        message->time--;
+
+        if (message->time <= 0 || i > 64)
+        {
+            it = sDebugConsoleMessages.erase(it);
+        }
+        else
+        {
+            i++;
+            ++it;
+        }
+    }
 }
+
 
 void DebugOnFrameEnd()
 {
@@ -2464,6 +2486,8 @@ void DebugOnFrameEnd()
 
                 ImGui::EndMenu(); // Teleport
             }
+
+            ImGui::MenuItem("Disable Music", NULL, &g_DisableMusic, true);
 
             ImGui::EndMenu(); // Game
         }
@@ -2506,13 +2530,24 @@ void DebugOnFrameEnd()
         {
             if (ImGui::BeginMenu("Windows"))
             {
-                ImGui::MenuItem("Show Switch States", NULL, &gDebugUIEnabled_SwitchStates, true);
-                ImGui::MenuItem("Show World State", NULL, &gDebugUIEnabled_WorldState, true);
+                ImGui::MenuItem("Show Switch States", "CTRL+1", &gDebugUIEnabled_SwitchStates, true);
+                ImGui::MenuItem("Show World State", "CTRL+2", &gDebugUIEnabled_WorldState, true);
+                ImGui::MenuItem("Show Event Window", "CTRL+3", &gDebugUIEnabled_Event, true);
+                ImGui::MenuItem("Show Resources Window", "CTRL+4", &gDebugUIEnabled_Resources, true);
 
                 ImGui::EndMenu(); // Windows
             }
 
             ImGui::EndMenu(); // View
+        }
+
+        if (ImGui::BeginMenu("Player"))
+        {
+            ImGui::MenuItem("Bullet Proof", NULL, reinterpret_cast<bool*>(&gAbeBulletProof_5C1BDA), true);
+            ImGui::MenuItem("Shrykull", NULL, reinterpret_cast<bool*>(&sActiveHero_5C1B68->field_16C_bHaveShrykull), true);
+            
+
+            ImGui::EndMenu(); // Player
         }
 
         ImGui::EndMainMenuBar();
@@ -2521,6 +2556,8 @@ void DebugOnFrameEnd()
     Debug_UI_SwitchStates();
     Debug_UI_WorldState();
     DebugUI_Console();
+    Debug_UI_Event();
+    Debug_UI_Resources();
     //if (sControlledCharacter_5C1B8C != nullptr)
     //    Debug_UI_Object(sControlledCharacter_5C1B8C);
 }
@@ -2540,9 +2577,9 @@ int sNextPolyF4Prim = 0;
 Line_G2 sLinePrimBuffer[1024];
 Poly_F4 sPolyF4PrimBuffer[1024];
 
-void DEV::DebugFillRect(int ** ot, int layer, int x, int y, int width, int height, BYTE r, BYTE g, BYTE b, bool worldspace, bool semiTransparent)
+void DEV::DebugFillRect(int** ot, int layer, int x, int y, int width, int height, BYTE r, BYTE g, BYTE b, bool worldspace, bool semiTransparent)
 {
-    Poly_F4 * mPolyF4 = &sPolyF4PrimBuffer[++sNextPolyF4Prim];
+    Poly_F4* mPolyF4 = &sPolyF4PrimBuffer[++sNextPolyF4Prim];
     *mPolyF4 = {};
     PolyF4_Init_4F8830(mPolyF4);
 
@@ -2572,7 +2609,7 @@ void DEV::DebugFillRect(int ** ot, int layer, int x, int y, int width, int heigh
     pScreenManager_5BB5F4->InvalidateRect_40EC10(0, 0, 640, 240);
 }
 
-void DEV::DebugDrawRect(int ** ot, int layer, int x, int y, int width, int height, BYTE r, BYTE g, BYTE b, bool worldspace, bool semiTransparent)
+void DEV::DebugDrawRect(int** ot, int layer, int x, int y, int width, int height, BYTE r, BYTE g, BYTE b, bool worldspace, bool semiTransparent)
 {
     DebugDrawLine(ot, layer, x, y, x + width, y, r, g, b, worldspace, semiTransparent);
     DebugDrawLine(ot, layer, x + width, y, x + width, y + height, r, g, b, worldspace, semiTransparent);
@@ -2580,9 +2617,9 @@ void DEV::DebugDrawRect(int ** ot, int layer, int x, int y, int width, int heigh
     DebugDrawLine(ot, layer, x, y + height, x, y, r, g, b, worldspace, semiTransparent);
 }
 
-void DEV::DebugDrawLine(int ** ot, int layer, int x1, int y1, int x2, int y2, BYTE r, BYTE g, BYTE b, bool worldspace, bool semiTransparent)
+void DEV::DebugDrawLine(int** ot, int layer, int x1, int y1, int x2, int y2, BYTE r, BYTE g, BYTE b, bool worldspace, bool semiTransparent)
 {
-    Line_G2 * mLineG2 = &sLinePrimBuffer[++sNextLinePrim];
+    Line_G2* mLineG2 = &sLinePrimBuffer[++sNextLinePrim];
     LineG2_Init(mLineG2);
 
     const auto camOffset = gMap_5C3030.field_24_camera_offset;
@@ -2612,7 +2649,7 @@ void DEV::DebugDrawLine(int ** ot, int layer, int x1, int y1, int x2, int y2, BY
     pScreenManager_5BB5F4->InvalidateRect_40EC10(0, 0, 640, 240);
 }
 
-void DEV::DebugDrawText(int ** ot, int layer, std::string & text, int x, int y, BYTE r, BYTE g, BYTE b, bool worldspace, bool semiTransparent)
+void DEV::DebugDrawText(int** ot, int layer, std::string& text, int x, int y, BYTE r, BYTE g, BYTE b, bool worldspace, bool semiTransparent)
 {
     const auto camOffset = gMap_5C3030.field_24_camera_offset;
 
@@ -2626,7 +2663,7 @@ void DEV::DebugDrawText(int ** ot, int layer, std::string & text, int x, int y, 
     g_DebugGlobalFontPolyIndex = g_DebugGlobalFont.DrawString_4337D0(ot, text.c_str(), x - (g_DebugGlobalFont.MeasureWidth_433700(text.c_str()) / 2) + 1, static_cast<short>(y + 1), semiTransparent, 0, 0, layer - 1, 0, 0, 0, g_DebugGlobalFontPolyIndex, FP_FromDouble(1.0), 640, 0);
 }
 
-void DEV::DebugOnFrameDraw(int ** pOt)
+void DEV::DebugOnFrameDraw(int** pOt)
 {
     sNextLinePrim = 0;
     sNextPolyF4Prim = 0;
